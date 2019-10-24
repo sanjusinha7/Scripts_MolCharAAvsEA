@@ -5,7 +5,7 @@ prob=readRDS('/Users/sinhas8/Downloads/TCGA_withMut.RDS')
 prob$race=factor(prob$race, labels = c('AI','AS','AA','HL','NH','EA') )
 
 Driver_GeneList=unique(Drivers$GeneName)
-
+Driver_GeneList=c(Driver_GeneList, 'PTEN')
 Freq_across_Population<-function(GeneName, cancer_type='LUSC'){
   geneID=which(prob$genes==GeneName)
   sample_OI=which(prob$types==cancer_type)

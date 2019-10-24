@@ -1,4 +1,4 @@
-  ####Script to get gene level copy number from segment level:: (TCGA level 3 from TCGA level 2 file.)
+####Script to get gene level copy number from segment level:: (TCGA level 3 from TCGA level 2 file.)
 
 ##libraries
 require(CNTools)

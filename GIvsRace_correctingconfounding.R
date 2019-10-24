@@ -14,6 +14,7 @@ scaling_cancerType<-function(quan1=gi, quan2=hist){
 setwd('/users/sinhas8/Project_Chromotrypsis/')
 mat=read.csv('2.Data/Corrected_NCIMD_HRD_by_LOH_and_GI.csv')
 age_sex=read.csv('2.Data/age_gender_info.csv')
+ncimd=cbind(ncimd, age_sex[match(ncimd$acc,age_sex$accession),])
 ##################
 ###Process files
 ##################
@@ -39,18 +40,24 @@ mat=cbind(mat, age_sex[match(mat$acc, age_sex$accession),])
 summary(lm(Normalized_gi~race+stage+
              age+GENDER+smoke+as.numeric(as.character(unlist(packyrs))), 
            data = mat[mat$hist=='LUAD',]))$coefficients
+summary(lm(Normalized_gi~race+stage+
+             age+GENDER+smoke+as.numeric(as.character(unlist(packyrs))), 
+           data = mat[mat$hist=='LUAD',]))$coefficients
+
 summary(lm(Normalized_hrd.loh~race+stage+
              age+GENDER+smoke+as.numeric(as.character(unlist(packyrs))), 
            data = mat[mat$hist=='LUAD',]))$coefficients
+
 summary(lm(Normalized_gi~race+stage+
-             age+GENDER+smoke+as.numeric(as.character(unlist(packyrs))), 
+             age+GENDER+smoke+as.numeric(as.character(unlist(packyrs)))+purity, 
            data = mat[mat$hist=='LUSC',]))$coefficients
 summary(lm(Normalized_hrd.loh~race+stage+
-             age+GENDER+smoke+as.numeric(as.character(unlist(packyrs))), 
+             age+GENDER+smoke+as.numeric(as.character(unlist(packyrs)))+purity,  
            data = mat[mat$hist=='LUSC',]))$coefficients
 summary(lm(Normalized_gi~race+stage+
-             age+GENDER+smoke+as.numeric(as.character(unlist(packyrs))), 
+             age+GENDER+smoke+as.numeric(as.character(unlist(packyrs)))+purity,  
            data = mat[mat$hist=='LUSC',]))$coefficients
+
 summary(lm(chtp_Quan~race+stage+
              age+GENDER+smoke+as.numeric(as.character(unlist(packyrs))), 
            data = mat[mat$hist=='LUSC',]))$coefficients

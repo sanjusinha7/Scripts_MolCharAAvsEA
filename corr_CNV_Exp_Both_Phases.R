@@ -5,13 +5,12 @@
 #########################
 require(data.table)
 require(statar)
-
 #########################
 ##Step 0: Files needed
 #########################
 setwd('/Users/sinhas8/Project_Chromotrypsis/')
 source('3.Tools/race_specific_corr_wd_exp.R')
-Exp=read.csv('/home/sinhas8/Downloads/RSEM_CPM_TMM_counts.txt', sep='\t')	#Exp matrix
+Exp=read.csv('/Users/sinhas8/Downloads/RSEM_CPM_TMM_counts.txt', sep='\t')	#Exp matrix
 #Demographics
 mat=read.csv('/home/sinhas8/Projects/Project_Chromotrypsis/2.Data/demo_and_clones.csv')
 ##Below are frequency files.

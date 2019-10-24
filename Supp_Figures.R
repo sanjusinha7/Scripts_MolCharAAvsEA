@@ -42,7 +42,6 @@ dev.off()
 #S2TCGA:GI gain and loss
 ##################
 df=read.csv('/Users/sinhas8/df_GIlossandgain.csv')
-head(df)
 df$Normalized_gi=scaling_cancerType(df$gi, df$hist)
 df$Normalized_gi_gain=scaling_cancerType(df$GI_gain, df$hist)
 
@@ -312,7 +311,7 @@ dev.off()
 fisher.test(cbind(table(tcga$CHTP_Canonical_Definition_Presence[tcga$race=='AA' & lung_can]),
                   table(tcga$CHTP_Canonical_Definition_Presence[tcga$race=='EA' & lung_can])),
             alternative = 'l')
-chtp_mat=aggregate(CHTP_Canonical_Definition_Presence ~ race+hist+info_tcga.CellofOrigin+info_tcga.Tissue_Type,
+chtp_mat=aggregate(CHTP_Canonical_Definition_Presence ~ inferred_ancestry+info_tcga.hist+info_tcga.CellofOrigin+info_tcga.Tissue_Type,
                    function(x) sum(x)/length(x), 
                    data = tcga)
 chtp_mat=chtp_mat[unlist(lapply(seq(1, nrow(chtp_mat), by = 2), function(x)
@@ -320,7 +319,7 @@ chtp_mat=chtp_mat[unlist(lapply(seq(1, nrow(chtp_mat), by = 2), function(x)
 tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/SuppFigS6.tif', 
      width = 1350, height = 450)
 plot_grid(leg,
-          ggplotGrob(ggplot(chtp_mat, aes(y=CHTP_Canonical_Definition_Presence, x=hist, fill=race))+
+          ggplotGrob(ggplot(chtp_mat, aes(y=CHTP_Canonical_Definition_Presence, x=info_tcga.hist, fill=inferred_ancestry))+
                 geom_bar(stat = 'identity', position="dodge")+
                 labs(title="CHTP across cancer types from TCGA",x="Race", y = "Proportion with Chromothripsis")+
                 theme_classic(base_size = 25)+

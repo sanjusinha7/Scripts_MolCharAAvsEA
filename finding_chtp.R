@@ -18,7 +18,7 @@ after_H1=sapply(seg_wdout_Diploid_List, function(x) split(x, x$chr)[sapply(split
 ##H2: Iterative cluster
 ##Functions needed
 source('/Users/sinhas8/Project_Chromotrypsis/3.Tools/BPC_Test.R')
-CNV_Types_Limit=1
+CNV_Types_Limit=2
 #mat=read.csv('/home/sinhas8/Projects/Project_Chromotrypsis/2.Data/mat_2ndOct.csv', sep='\t')
 qq=mclapply(after_H1, function(x) BPC_Test(sample=x), mc.cores=detectCores())
 qq=qq[!sapply(qq, function(x) is.null(nrow(x)))]
@@ -44,9 +44,10 @@ Correct_Names = sapply(sapply(Inconsistent_Names, function(x) strsplit(strsplit(
 
 Samples_wd_Chtp$Sample_names[is.na(match(sapply(Samples_wd_Chtp$Sample_names,function(x) gsub('-','\\.', x)), sapply(mat$File,function(x) gsub('-','\\.', x))))]= Correct_Names
 
+
 ##Part 2 due to inconsistent part##
 mat$chtp_Quan_new=0; mat$chtp_new=''
-mat$chtp_Quan_new[match(Samples_wd_Chtp$Sample_names, mat$File)] = Samples_wd_Chtp$Quantity
+mat$chtp_Quan_new[na.omit(match(Samples_wd_Chtp$Sample_names, mat$File))] = Samples_wd_Chtp$Quantity
 mat$chtp_new[match(Samples_wd_Chtp$Sample_names, mat$File)] = as.character(Samples_wd_Chtp$chromosome)
 
 #mat_filtered=mat[mat$hist=='sq' | mat$hist=='adeno',]

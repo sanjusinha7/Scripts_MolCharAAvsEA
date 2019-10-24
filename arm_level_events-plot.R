@@ -6,10 +6,10 @@ setwd('/Users/sinhas8/Project_Chromotrypsis/4.Results/')
 ########################
 ###Figure 2A #in NCIMD
 ########################
-adeno_AA=read.csv('./GISTIC_results/Trimmed_GISTIC_Results/AA_adeno/broad_significance_results.txt', sep='\t')
-adeno_EA=read.csv('./GISTIC_results/Trimmed_GISTIC_Results/EA_adeno/broad_significance_results.txt', sep='\t')
-sq_AA=read.csv('./GISTIC_results/Trimmed_GISTIC_Results/AA_sq/broad_significance_results.txt', sep='\t')
-sq_EA=read.csv('./GISTIC_results/Trimmed_GISTIC_Results/EA_sq/broad_significance_results.txt', sep='\t')
+adeno_AA=read.csv('./GISTIC_results/Trimmed_GISTIC_Results/LUAD_AA/broad_significance_results.txt', sep='\t')
+adeno_EA=read.csv('./GISTIC_results/Trimmed_GISTIC_Results/LUAD_EA/broad_significance_results.txt', sep='\t')
+sq_AA=read.csv('./GISTIC_results/Trimmed_GISTIC_Results/LUSC_EA/broad_significance_results.txt', sep='\t')
+sq_EA=read.csv('./GISTIC_results/Trimmed_GISTIC_Results/LUSC_EA/broad_significance_results.txt', sep='\t')
 
 ##
 df_sq_Amp=data.frame(Arm=sq_AA$Arm, AA_Freq=sq_AA$Amp.frequency, EA_Freq=sq_EA$Amp.frequency, AA_qvalue=sq_AA$Amp.q.value, EA_qvalue=sq_EA$Amp.q.value,
@@ -97,7 +97,6 @@ df_TCGA=df
 df=rbind(data.frame(df_NCIMD, Cohort='NCIMD'),
          data.frame(df_TCGA, Cohort='TCGA') )
 
-
 ########################
 #Plot them together
 ########################
@@ -114,11 +113,11 @@ AX=ggplotGrob(
     theme(legend.position="top", legend.text=element_text(size=20),
           legend.title=element_text(size=22))+
     #lims(x=c(0, max(max(df_adeno$AA_Freq), max(df_adeno$EA_Freq))), y=c(0,max(max(df_adeno$AA_Freq), max(df_adeno$EA_Freq))))	+
-    labs(x='Frequency in AA', y='Frequency in EA')+
+    labs(x='Frequency in AA', y='Frequency in EA', color="SCNA recurrence significance")+
     coord_cartesian(xlim = c(0, 0.8), ylim = c(0, 0.8)) 
 )
 
-tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Figure3_TCGAandNCIMDv1.tif',
+tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/31stAugFigure3_TCGAandNCIMDv1.tif',
      width = 1800, height = 1000)
 plot(AX)
 dev.off()

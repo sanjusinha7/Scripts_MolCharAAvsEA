@@ -79,8 +79,6 @@ B=ggplotGrob(ggplot(tcga, aes(x=race,y=Normalized_hrd.loh, fill=race))+
   coord_cartesian(ylim = ylim1*1.15))
 # B$layout$l[B$layout$name == "title"] <- 1
 
-wilcox.test(tcga$Normalized_hrd.loh~tcga$race, alternative='g')
-
 ##################
 #TCGA GI in lung cancer
 ##################
@@ -168,7 +166,7 @@ D2=ggplotGrob(
                 coord_cartesian(ylim = ylim1*1.15)
 )
 ##################
-#NCIMD- GI in lung cancer
+#NCIMD- HRD in lung cancer
 ##################
 E2=ggplotGrob(ggplot(mat[mat$hist=='LUSC',], aes(x=race, y=Normalized_hrd.loh, fill=race))+
                 geom_violin(trim=FALSE)+
@@ -250,19 +248,19 @@ df1=data.frame(Value=tcga$Normalized_gi, Type='Genomic Instability', Cohort='Pan
 df2=data.frame(Value=tcga$Normalized_hrd.loh, Type='HR-deficiency', Cohort='PanCan TCGA', race=tcga$race)
 df3=data.frame(Value=tcga[lung_can,]$Normalized_gi, Type='Genomic Instability', Cohort='LUSC TCGA', race=tcga[lung_can,]$race)
 df4=data.frame(Value=tcga[lung_can,]$Normalized_hrd.loh, Type='HR-deficiency', Cohort='LUSC TCGA', race=tcga[lung_can,]$race)
-df5=data.frame(Value=mat[mat$hist=='LUSC',]$Normalized_gi, Type='Genomic Instability', Cohort='LUSC NCIMD', 
-               race=mat[mat$hist=='LUSC',]$race)
-df6=data.frame(Value=mat[mat$hist=='LUSC',]$Normalized_hrd.loh, Type='HR-deficiency', Cohort='LUSC NCIMD',
-               race=mat[mat$hist=='LUSC',]$race)
-
+# df5=data.frame(Value=mat[mat$hist=='LUSC',]$Normalized_gi, Type='Genomic Instability', Cohort='LUSC NCIMD', 
+#                race=mat[mat$hist=='LUSC',]$race)
+# df6=data.frame(Value=mat[mat$hist=='LUSC',]$Normalized_hrd.loh, Type='HR-deficiency', Cohort='LUSC NCIMD',
+#                race=mat[mat$hist=='LUSC',]$race)
+# 
 df7=data.frame(aggregate(CHTP_Canonical_Definition_Presence ~ race, function(x) sum(x)/length(x), data = tcga), Cohort='PanCan TCGA')
 df8=data.frame(aggregate(CHTP_Canonical_Definition_Presence ~ race, function(x) sum(x)/length(x), data = tcga[lung_can,]), Cohort='LUSC TCGA')
-df9=data.frame(aggregate(chtp_Quan ~ race, function(x) sum(x)/length(x), data = mat[mat$hist=='LUSC',]), Cohort='LUSC NCIMD')
-colnames(df9)[2]='CHTP_Canonical_Definition_Presence'
+# df9=data.frame(aggregate(chtp_Quan ~ race, function(x) sum(x)/length(x), data = mat[mat$hist=='LUSC',]), Cohort='LUSC NCIMD')
+# colnames(df9)[2]='CHTP_Canonical_Definition_Presence'
 ##
-df_CHTP=cbind(rbind(df7, df8, df9),Type='Chromothripsis')
-df_HRD=rbind(df2, df4, df6)
-df_GI=rbind(df1, df3, df5)
+df_CHTP=cbind(rbind(df7, df8),Type='Chromothripsis')
+df_HRD=rbind(df2, df4)
+df_GI=rbind(df1, df3)
 ##############
 ######GI
 ##############
@@ -314,14 +312,11 @@ Pvalues=data.frame(p_values=c(P1=round(fisher.test(cbind(table(tcga$CHTP_Canonic
                                                    alternative = 'l')[1]$p.value, 2),
                               P2=round(fisher.test(cbind(table(tcga$CHTP_Canonical_Definition_Presence[tcga$race=='AA' & lung_can]),
                                                          table(tcga$CHTP_Canonical_Definition_Presence[tcga$race=='EA' & lung_can])),
-                                                   alternative = 'l')[1]$p.value, 2),
-                              P3=round(fisher.test(cbind(table(mat$chtp_Quan[mat$hist=='LUSC' & mat$race=='EA']),
-                                                         table(mat$chtp_Quan[mat$hist=='LUSC' & mat$race=='AA'])),
-                                                   alternative = 'g')[1]$p.value, 2) ),
-                   xstar=c(1.5), ystar=c(0.2, 0.5, 0.5), 
-                   Cohort=c('PanCan TCGA', 'LUSC TCGA', 'LUSC NCIMD'),
-                   Type=rep('Chromothripsis',3),
-                   race=rep('AA', 3)
+                                                   alternative = 'l')[1]$p.value, 2)),
+                   xstar=c(1.5), ystar=c(0.2, 0.5), 
+                   Cohort=c('PanCan TCGA', 'LUSC TCGA'),
+                   Type=rep('Chromothripsis',2),
+                   race=rep('AA', 2)
 )
 Pvalues$p_values=ifelse(Pvalues$p_values<0.05, '*','ns')
 ###
@@ -344,7 +339,7 @@ CHTP_plot=ggplotGrob(
 ##############
 ######Put all together
 ##############
-tiff('prep_final_figures/Delthis_Figure1_May3.tif', width = 900, height = 900)
+tiff('prep_final_figures/Delthis_Figure5_Aug29.tif', width = 900, height = 600)
 plot_grid(leg,
           plot_grid(GI_plot, HRD_plot, CHTP_plot, align='h', nrow=1,
                     labels = 'AUTO', label_size = 35, rel_widths = c(14/45, 13/45, 10/45) ), 

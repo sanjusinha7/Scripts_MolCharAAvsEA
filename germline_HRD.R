@@ -43,9 +43,7 @@ PanCan_Enrichmentof_Germline_Deficiency_byRace<-function(Geneset_OI=HR_Genes){
     }
   
 }
-Enrichmentof_Germline_Deficiency_byRace<-function(
-  Geneset_OI=as.character(unlist(il6$Genes)),
-  cancer_type='LUAD'){
+Enrichmentof_Germline_Deficiency_byRace<-function(Geneset_OI=as.character(unlist(il6$Genes)), cancer_type='LUAD'){
   Geneset_OI=as.character(unlist(Geneset_OI))
   totalAA=table(demo$race[demo$acronym==cancer_type])['AA']
   totalEA=table(demo$race[demo$acronym==cancer_type])['EA']
@@ -63,7 +61,6 @@ Enrichmentof_Germline_Deficiency_byRace<-function(
     return(data.frame(NA, NA, NA))
   } else{ return(data.frame(pvalue, GermlineHRD_inAA/totalAA, GermlineHRD_inEA/totalEA ))}
 }
-
 ####################################################################
 #calling functions
 ####################################################################
@@ -78,7 +75,8 @@ CanSpec_df2write=lapply(DDR_Geneset_List,
                                                                   cancer_type = y)))
 
 ####For core HRD
-CompHRD_pvalues=unlist(CanSpec_df2write$Homologous.Recomination..HR.[1,])
+CanSpec_df2write$Homology.dependent.recombination..HDR.=CanSpec_df2write$Homology.dependent.recombination..HDR.[,unlist(!is.na(CanSpec_df2write$Homology.dependent.recombination..HDR.)[1,])]
+CompHRD_pvalues=unlist(CanSpec_df2write$Homology.dependent.recombination..HDR.[1,])
 HRD=CanSpec_df2write$Homology.dependent.recombination..HDR.[2:3,]
 HRD=HRD[,apply(HRD, 2, function(x) sum(unlist(x))>0 ) ]
 df_HRD=data.frame(Prop = unlist(c(HRD)),
@@ -87,7 +85,7 @@ df_HRD=data.frame(Prop = unlist(c(HRD)),
 annotation=data.frame(pvalues=CompHRD_pvalues[colnames(HRD)],
                 xstar=1.5,
                 ystar=sapply(split(df_HRD$Prop,
-                                    df_HRD$cancer_type), function(x) max(x)+0.01 ),
+                                    df_HRD$cancer_type), function(x) max(x)-(0.1*max(x))),
                 cancer_type=levels(df_HRD$cancer_type),
                 Race='AA')
 ####################################################################
@@ -111,7 +109,7 @@ Plot1<-ggplot(df_HRD, aes(y=Prop, x=Race, fill=Race))+
 
 Plot1=Plot1+geom_text(data=annotation,
                   aes(x=xstar, y=ystar,
-                      label = format.pval(pvalues, digits=1)), size=9)
+                      label = format.pval(pvalues, digits=1)), size=6)
   
 tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/germline_Figurev1.tif',
      width = 900, height = 900)
@@ -322,4 +320,3 @@ tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Events_Legend.tif'
      width = 300, height = 50)
 plot(leg)
 dev.off()
-

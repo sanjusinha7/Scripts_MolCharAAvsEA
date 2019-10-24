@@ -1,7 +1,10 @@
 ########################
 ##Figure 5A:: Distribution of COSMIC genes Alteration Freq
 ########################
+library(grid)
+library(gridExtra)
 require(ggrepel)
+require(cowplot)
 df_Freq=cbind(Amp=read.csv('/Users/sinhas8/Project_Chromotrypsis/4.Results/GISTIC_results/Complete_NCIMD/Gen_Level_Freq_COSMIC/gene_Amp_Freq_COSMIC.csv'),
               Del=read.csv('/Users/sinhas8/Project_Chromotrypsis/4.Results/GISTIC_results/Complete_NCIMD/Gen_Level_Freq_COSMIC/gene_Del_Freq_COSMIC.csv')[,-1])
 rownames(df_Freq) = df_Freq[,1];df_Freq=df_Freq[,-1] 
@@ -71,7 +74,7 @@ Figure5A=ggplotGrob(
     geom_text_repel(size=8, show.legend = FALSE)+ 
     facet_grid(Histology~Event_Type)+
     theme_bw(base_size = 24)+
-    labs(x='Frequency in AA', y='Frequency in EA')+
+    labs(x='Frequency in AA', y='Frequency in EA', color="SCNA recurrence significance")+
     #ggtitle('Lung cancer Drivers Alteration Freq across race')+
     scale_color_manual(values=c("blue", "orange", "red", "black"))+ 
     guides(color=guide_legend(nrow=2, byrow=TRUE, override.aes = list(size = 3) ))+
@@ -87,9 +90,12 @@ dev.off()
 ##########
 ###Figure 5B:: Showing Exp and CNV Changes
 ##########
+source('../3.Tools/define_Exp_matched_Scale.R')
 Exp_matched_scaled=t(Exp_matched_scaled)
 CNV_matched_scaled=t(CNV_matched_scaled)
 Drivers=Freq_lung_wdoutNA[-grep('None',Freq_lung_wdoutNA$Significance),]
+Driver_GeneList=unique(Drivers$GeneName)
+
 Driver_corr=t(sapply(as.character(unlist(Driver_GeneList)), function(x)
   cor.test(unlist(Exp_matched[x,]), unlist(CNV_matched[x,]), method = c('pearson') )[c(3,4)]))
 Driver_corr=Driver_corr[!duplicated(rownames(Driver_corr)),]
@@ -151,7 +157,7 @@ Supp_Figure5B_plist=c(lapply(rownames(Driver_corr)[c(2, 4, 5, 7, 13)], function(
                                                                                             P_value=Driver_corr[x,1],
                                                                                             Rho=Driver_corr[x,2],
                                                                                             K=1.5)))
-tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Supp_Figure_Expressioncorr_8thMay.tif', 
+tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Supp_Figure_Expressioncorr_Sep1.tif', 
      width=1500, height=1200)
 plot_grid(legend,
           do.call("grid.arrange", c(Supp_Figure5B_plist, ncol=6, nrow=3)),
@@ -160,6 +166,7 @@ dev.off()
 ###############
 ##Putting them together:: Figure 5B with Legend
 ###############
+Exp_matched_scaled['CDKN1A',]
 Figure5B_plist=c(lapply(rownames(Driver_corr)[c(4)], function(x) plot_CNV_Exp(GeneName=x,
                                                                               P_value=Driver_corr[x,1],
                                                                               Rho=Driver_corr[x,2],
@@ -196,7 +203,7 @@ Comp_Figure_5B=plot_grid(legend,
 ###############
 ##Putting them together:: Complete FIgure 5
 ###############
-tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Comp_Figure5_May8thv3.tif', 
+tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Comp_Figure5_Sep1.tif', 
      width=1800, height=1200)
 plot_grid(Figure5A, 
           plot_grid(NULL, Comp_Figure_5B, NULL, rel_heights = c(1/10, 3/5, 1/10), nrow=3), 

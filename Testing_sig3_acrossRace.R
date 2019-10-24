@@ -1,6 +1,7 @@
 ##Testign Signature 3 across race
 err_handle<-function(x){ tryCatch(x, error=function(e){NA}) }
 TCGAsig=read.csv('/Users/sinhas8/Downloads/signature_profile_sample.txt', sep='\t')
+head(TCGAsig)
 levels(TCGAsig$race)[c(3,6)]=c('AA','EA')
 TCGAsig=TCGAsig[TCGAsig$race=='AA' | TCGAsig$race=='EA',]
 cancer_type_list=levels(TCGAsig$Project_Name)
