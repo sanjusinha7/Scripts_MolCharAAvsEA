@@ -9,7 +9,7 @@ require(survival); require(survminer)
 #########################
 setwd('/Users/sinhas8/Project_Chromotrypsis/')
 mat=read.csv('2.Data/Corrected_NCIMD_HRD_by_LOH_and_GI.csv')
-mat_updated=read.csv('demo_updated.csv')
+mat_updated=read.csv('2.Data/demo_updated.csv')
 cytobands=read.csv('2.Data/cytobandv1', sep='\t')
 #########################
 ##Step 0: pre-processing

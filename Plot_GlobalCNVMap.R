@@ -2,8 +2,10 @@
 ####Figure 3X-Global CNV plot
 ########################
 require(copynumber)
+setwd('/Users/sinhas8/Project_Chromotrypsis/')
 df=read.csv('2.Data/Input_for_GISTIC.txt',sep=' ')
 Phase1=read.csv('2.Data/GISTIC_Input_forOncoScan_Raw.probeset.txt',sep='\t')
+# Phase1=fread('2.Data/GISTIC_Input_forOncoScan_Raw.probeset.txt',sep='\t')
 ####
 Phase2=cbind(read.csv('/Users/sinhas8/Downloads/Result_probeset/Result_P1.probeset.txt', sep = '\t'),
              read.csv('/Users/sinhas8/Downloads/Result_probeset/Result_P2.probeset.txt', sep = '\t')[,-(1:3)],
@@ -14,6 +16,8 @@ Phase2=cbind(read.csv('/Users/sinhas8/Downloads/Result_probeset/Result_P1.probes
              read.csv('/Users/sinhas8/Downloads/Result_probeset/Result_P7.probeset.txt', sep = '\t')[,-(1:3)],
              read.csv('/Users/sinhas8/Downloads/Result_probeset/Result_P8.probeset.txt', sep = '\t')[,-(1:3)])
 both=cbind(Phase1, Phase2)
+saveRDS(both, '2.Data/Results_Probeset.RDS')
+both=readRDS('2.Data/Results_Probeset.RDS')
 mat=read.csv('2.Data/Corrected_NCIMD_HRD_by_LOH_and_GI.csv')
 mat=mat[mat$hist=='adeno' | mat$hist =='sq',]
 mat$hist=as.character(mat$hist)
@@ -40,20 +44,20 @@ mat=mat[!is.na(match(mat$acc, colnames(both_FF))),]
 ########
 race='AA'; cancer_type='LUSC'
 both_FF_AA_LUSC=both_FF[,c(1,2, which(mat$race==race & mat$hist==cancer_type)+2 )]
-both_FF.res_AA_LUSC <- pcf(data=both_FF_AA_LUSC, gamma=50, verbose=FALSE)
-multiseg_AA_LUSC=multipcf(data = both_FF_AA_LUSC, gamma = 100, verbose = FALSE)
+both_FF.res_AA_LUSC <- pcf(data=both_FF_AA_LUSC, gamma=50, verbose=FALSE, fast = T)
+multiseg_AA_LUSC=multipcf(data = both_FF_AA_LUSC, gamma = 100, verbose = FALSE, fast = T)
 race='EA'; cancer_type='LUSC'
 both_FF_EA_LUSC=both_FF[,c(1,2, which(mat$race==race & mat$hist==cancer_type)+2 )]
-both_FF.res_EA_LUSC <- pcf(data=both_FF_EA_LUSC, gamma=50, verbose=FALSE)
-multiseg_EA_LUSC=multipcf(data = both_FF_EA_LUSC, gamma = 100, verbose = FALSE)
+both_FF.res_EA_LUSC <- pcf(data=both_FF_EA_LUSC, gamma=50, verbose=FALSE, fast=T)
+multiseg_EA_LUSC=multipcf(data = both_FF_EA_LUSC, gamma = 100, verbose = FALSE, fast=T)
 race='AA'; cancer_type='LUAD'
 both_FF_AA_LUAD=both_FF[,c(1,2, which(mat$race==race & mat$hist==cancer_type)+2 )]
-both_FF.res_AA_LUAD <- pcf(data=both_FF_AA_LUAD, gamma=50, verbose=FALSE)
-multiseg_AA_LUAD=multipcf(data = both_FF_AA_LUAD, gamma = 100, verbose = FALSE)
+both_FF.res_AA_LUAD <- pcf(data=both_FF_AA_LUAD, gamma=50, verbose=FALSE, fast=T)
+multiseg_AA_LUAD=multipcf(data = both_FF_AA_LUAD, gamma = 100, verbose = FALSE, fast=T)
 race='EA'; cancer_type='LUAD'
 both_FF_EA_LUAD=both_FF[,c(1,2, which(mat$race==race & mat$hist==cancer_type)+2 )]
-both_FF.res_EA_LUAD <- pcf(data=both_FF_EA_LUAD, gamma=50, verbose=FALSE)
-multiseg_EA_LUAD=multipcf(data = both_FF_EA_LUAD, gamma = 100, verbose = FALSE)
+both_FF.res_EA_LUAD <- pcf(data=both_FF_EA_LUAD, gamma=50, verbose=FALSE, fast=T)
+multiseg_EA_LUAD=multipcf(data = both_FF_EA_LUAD, gamma = 100, verbose = FALSE, fast=T)
 
 
 Global_CNV_plot<-function(both_FF.res, multiseg, race, cancer_type){
@@ -103,3 +107,15 @@ Global_CNV_plot(both_FF.res_AA_LUSC, multiseg_AA_LUSC, race='AA', cancer_type='L
 Global_CNV_plot(both_FF.res_EA_LUSC, multiseg_EA_LUSC, race='EA', cancer_type='LUSC')
 dev.off()
 
+##############
+# Vector form
+##############
+setEPS()
+postscript(paste('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Circ_test1v2.eps'),
+           height = 16, width=16)
+par(mfrow=c(2,2))
+Global_CNV_plot(both_FF.res_AA_LUAD, multiseg_AA_LUAD, race='AA', cancer_type='LUAD')
+Global_CNV_plot(both_FF.res_EA_LUAD, multiseg_EA_LUAD, race='EA', cancer_type='LUAD')
+Global_CNV_plot(both_FF.res_AA_LUSC, multiseg_AA_LUSC, race='AA', cancer_type='LUSC')
+Global_CNV_plot(both_FF.res_EA_LUSC, multiseg_EA_LUSC, race='EA', cancer_type='LUSC')
+dev.off()

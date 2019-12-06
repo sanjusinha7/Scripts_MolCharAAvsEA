@@ -1,4 +1,4 @@
-###Aug28: Updated Figure 1
+# Aug28: Updated Figure 1
 ##################
 #NCIMDProcessing
 ##################
@@ -7,7 +7,6 @@ mat=mat[mat$hist=='adeno' | mat$hist =='sq',]
 mat$hist=as.character(mat$hist)
 mat$hist=factor(mat$hist)
 levels(mat$hist)=c('LUAD', 'LUSC')
-dim(mat)
 range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 scaling_cancerType<-function(quan1=gi, quan2=hist){
   unlist(lapply(split(quan1, quan2), function(x) range01(x)))
@@ -17,7 +16,7 @@ mat$Normalized_gi=scaling_cancerType(mat$CNV_burden, mat$hist)
 mat$Normalized_hrd.loh=scaling_cancerType(mat$HRD_by_LOH, mat$hist)
 mat$Normalized_Chromothripsis_Presence=scaling_cancerType(mat$chtp_Quan, mat$hist)
 ##################
-###Getting Legend
+# Getting Legend
 ##################
 ylim1=c(0,1)
 leg=get_legend(ggplot(tcga, aes(x=race,y=Normalized_gi, fill=race))+
@@ -37,7 +36,7 @@ leg=get_legend(ggplot(tcga, aes(x=race,y=Normalized_gi, fill=race))+
 )
 
 ##################
-#Merging all together
+# Merging all together
 ##################
 df1=data.frame(Value=mat[mat$hist=='LUSC',]$Normalized_gi, Type='Genomic Instability', Cohort='LUSC NCIMD',
                race=mat[mat$hist=='LUSC',]$race)
@@ -68,7 +67,7 @@ df_GI=rbind(df1, df2, df3)
 df_HRD=rbind(df4, df5, df6)
 df_CHTP=cbind(rbind(df7, df8, df9),Type='Chromothripsis')
 ##############
-######GI
+# GI
 ##############
 GI_plot=ggplotGrob(
   ggplot(df_GI, aes(x=race,y=Value, fill=race))+
@@ -76,7 +75,11 @@ GI_plot=ggplotGrob(
     geom_boxplot(width=0.3, fill="white")+
     labs(x="", y = "Scaled GI")+
     theme_bw(base_size = 25)+
-    stat_compare_means(method = "wilcox.test", label = "p.signif", label.x = 1.5,
+    stat_compare_means(method = "wilcox.test", 
+                       #label = "p.signif", 
+                       label = 'p.format', 
+                       label.x = 1.2,
+                       label.y = 1.33,
                        #label.y=ylim1[2],
                        size = 8)+
     guides(fill=FALSE)+
@@ -90,7 +93,7 @@ GI_plot=ggplotGrob(
   #               coord_cartesian(ylim = ylim1*1.15))
 )
 ##############
-######HRD
+# HRD
 ##############
 HRD_plot=ggplotGrob(
   ggplot(df_HRD, aes(x=race,y=Value, fill=race))+
@@ -98,7 +101,11 @@ HRD_plot=ggplotGrob(
     geom_boxplot(width=0.3, fill="white")+
     labs(x="Race", y = "Scaled HR-Deficiency")+
     theme_bw(base_size = 25)+
-    stat_compare_means(method = "wilcox.test", label = "p.signif", label.x = 1.5,
+    stat_compare_means(method = "wilcox.test", 
+                       #label = "p.signif", 
+                       label = 'p',
+                       label.x = 1.25,
+                       #label.y = 1.3,
                        #label.y=ylim1[2],
                        size = 8)+
     guides(fill=FALSE)+
@@ -111,7 +118,7 @@ HRD_plot=ggplotGrob(
           axis.ticks.x=element_blank())
 )
 ##############
-######CHTP
+# CHTP
 ##############
 ###Approprite test for barplot
 
@@ -124,12 +131,12 @@ Pvalues=data.frame(p_values=c(P1=round(fisher.test(t(cbind(table(mat$chtp_presen
                               P3=round(fisher.test(cbind(table(tcga$CHTP_Canonical_Definition_Presence[tcga$hist=='LUSC' & tcga$race=='EA']),
                                                          table(tcga$CHTP_Canonical_Definition_Presence[tcga$hist=='LUSC' & tcga$race=='AA'])),
                                                    alternative = 'g')[1]$p.value, 2)),
-                   xstar=c(1.5), ystar=c(0.5, 0.5, 0.5),
+                   xstar=c(1.5), ystar=c(0.5, 0.5, 0.55),
                    Cohort=c('LUSC NCIMD', 'LUAD NCIMD', 'LUSC TCGA'),
                    Type=rep('Chromothripsis',3),
                    race=rep('AA', 3)
                    )
-Pvalues$p_values=ifelse(Pvalues$p_values<0.05, '*','ns')
+#Pvalues$p_values=ifelse(Pvalues$p_values<0.05, '*','ns')
 
 ###
 df_counts = cbind(rbind(aggregate(X ~ race+hist, mat, function(x) length(x))[c(3, 4, 1, 2),],
@@ -143,7 +150,7 @@ CHTP_plot=ggplotGrob(
     guides(fill=FALSE)+
     scale_fill_brewer(palette=colorType_Set)+
     facet_grid(Cohort~Type, scales = 'free')+
-    geom_text(data=Pvalues, aes(x=xstar, y=ystar, label=p_values), size=8)+
+    geom_text(data=Pvalues, aes(x=xstar, y=ystar, label=paste0('p=', p_values)), size=8)+
     geom_text(data=df_counts, aes(label=paste('n=',X, sep=''), x=x_coor), vjust=-0.3, size=7)+
     theme(axis.title.x=element_blank(),
           axis.text.x=element_blank(),
@@ -153,9 +160,14 @@ CHTP_plot=ggplotGrob(
 )
 
 ##############
-######Put all together
+# Put all together
 ##############
-tiff('prep_final_figures/Delthis_Figure1_Sept13.tif', width = 900, height = 900)
+##############
+# Vector form
+##############
+setEPS()
+postscript('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Figure1_vectorForm.eps',
+           height=12, width = 12)
 plot_grid(leg,
           plot_grid(GI_plot, HRD_plot, CHTP_plot, align='h', nrow=1,
                     labels = 'AUTO', label_size = 35, rel_widths = c(14/45, 13/45, 10/45) ),

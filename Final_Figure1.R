@@ -9,7 +9,7 @@ require(cowplot)
 
 colorType_Set='Set1'
 setwd('/Users/sinhas8/Project_Chromotrypsis/')
-tcga=read.csv('Results_New/Nov_28/Supp_Table3.csv')
+tcga=read.csv('/Users/sinhas8/Project_Chromotrypsis/Results_New/Nov_28/Supp_Table3.csv')
 
 range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 scaling_cancerType<-function(quan1=gi, quan2=hist){
@@ -345,8 +345,16 @@ plot_grid(leg,
                     labels = 'AUTO', label_size = 35, rel_widths = c(14/45, 13/45, 10/45) ), 
           nrow=2, ncol=1, rel_heights = c(3/50, 47/50))
 dev.off()
-
-
+##############
+######Vector form
+##############
+setEPS()
+postscript('prep_final_figures/Fig1_vectorForm.eps', height=8, width = 12)
+plot_grid(leg,
+          plot_grid(GI_plot, HRD_plot, CHTP_plot, align='h', nrow=1,
+                    labels = 'AUTO', label_size = 35, rel_widths = c(14/45, 13/45, 10/45) ), 
+          nrow=2, ncol=1, rel_heights = c(3/50, 47/50))
+dev.off()
 
 ##############
 ######Correlation Tests

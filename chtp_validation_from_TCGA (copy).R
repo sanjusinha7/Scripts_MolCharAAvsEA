@@ -83,6 +83,8 @@ saveRDS(TCGA_chtp, '/cbcb/project2-scratch/sanju/Chromotrypsis/2.Data/TCGA_chtp.
 #TCGA_chtp = readRDS('/cbcb/project2-scratch/sanju/Chromotrypsis/2.Data/TCGA_chtp.RDS')
 #saveRDS(TCGA_chtp, '/cbcb/project2-scratch/sanju/Chromotrypsis/2.Data/TCGA_chtp_UpdatedDef.RDS')
 
+TCGA_chtp=readRDS('/Users/sinhas8/Project_Chromotrypsis/2.Data/TCGA_chtp_UpdatedDef.RDS')
+head(TCGA_chtp)
 TCGA_chtp_FF=TCGA_chtp
 TCGA_chtp_FF=TCGA_chtp[!sapply(TCGA_chtp, function(x) is.null(dim(x)))]
 TCGA_chtp_df=TCGA_chtp_FF
@@ -96,17 +98,21 @@ head(TCGA_chtp_df_filtered)
 write.csv(TCGA_chtp_df_filtered, '/Users/sinhas8/Project_Chromotrypsis/2.Data/TCGA_chtp_with_CHR.csv', 
           quote=F, row.names=F)
 
+# Start from here
+TCGA_chtp_df_filtered=read.csv('/Users/sinhas8/Project_Chromotrypsis/2.Data/TCGA_chtp_with_CHR.csv')
+
 AA_Count_greater_atleast5 = sapply(split(TCGA_chtp_df_filtered$race, 
                                          TCGA_chtp_df_filtered$hist), 
                                    function(x) table(x)[table(x)>0][1]>4)
 table(TCGA_chtp_df_filtered$hist)
-TCGA_chtp_df_filtered =do.call(rbind, split(TCGA_chtp_df_filtered, TCGA_chtp_df_filtered$hist)[AA_Count_greater_atleast5])
+TCGA_chtp_df_filtered =do.call(rbind, split(TCGA_chtp_df_filtered,
+                                            TCGA_chtp_df_filtered$hist)[AA_Count_greater_atleast5])
 df=TCGA_chtp_df_filtered
 
 ###
 chtp_distribution<-function(cancer_mat=temp[[2]]){
 	chtp_dist=data.frame(table(unlist(sapply(cancer_mat$Chr, function(x) 
-                     strsplit(gsub('[c\\(\\) \\"]','',x), ',')[[1]]) ))/nrow(cancer_mat))
+                     strsplit(gsub('[c\\(\\) \\"]','',x), '_')[[1]]) ))/nrow(cancer_mat))
 	chtp_dist$Var1=sapply(chtp_dist$Var1, function(x) as.numeric(as.character(x)))
 	chtp_dist=chtp_dist[chtp_dist$Var1!='24',]
 	if(nrow(chtp_dist)<23){
@@ -121,7 +127,6 @@ chtp_distribution<-function(cancer_mat=temp[[2]]){
 	}
 	
 }
-
 df$hist=as.character(df$hist)
 temp=split(df, list(df$hist,df$race))
 df_list=lapply(1:length(temp), function(x) err_handle(chtp_distribution(temp[[x]])) )
@@ -131,17 +136,17 @@ df2plot$Var1=as.numeric(df2plot$Var1)
 
 levels(df2plot$Cancer_Type)
 colorType_Set='Set1'
-tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/CHTP_9thMay', height=2000, width=3000)
-ggplot(df2plot, aes(y=Freq, x=Var1, fill=Race))+
-	geom_bar(stat = "identity", position=position_dodge())+
-	facet_wrap(~Cancer_Type, scales='free')+
-	labs(y='Chromothripsis Frequency', x='Chromosomes')+
-	scale_x_continuous('Chromosomes', labels = as.character(ID), breaks = ID)+
-	theme(axis.text.x = element_text(size = 10))+
+# tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/CHTP_9thMay', height=2000, width=3000)
+Ext_Fig2C=ggplot(df2plot, aes(y=Freq, x=Var1, fill=Race))+
+  geom_bar(stat = "identity", position=position_dodge())+
+  facet_wrap(~Cancer_Type, scales='free')+
+  labs(y='Chromothripsis Frequency', x='Chromosomes')+
+  scale_x_continuous('Chromosomes', labels = as.character(ID), breaks = ID)+
   theme_classic(base_size = 25)+
+  theme(axis.text.x = element_text(size = 8))+
   scale_fill_brewer(palette=colorType_Set)+
   guides(fill=FALSE)
-dev.off()
+# dev.off()
 
 #########
 
@@ -168,8 +173,8 @@ df=df[!(df$Var1== '23' | df$Var1== '24'),]
 
 ID <- 1:22
 
-tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/FigureS7B.tif', height=300, width=400)
-ggplot(df, aes(y=Freq, x=Var1, fill=Race))+
+
+Ext_Fig2B=ggplot(df, aes(y=Freq, x=Var1, fill=Race))+
   geom_bar(stat = "identity", position=position_dodge())+
   facet_wrap(~Hist, scales = 'free', shrink = T, nrow=2)+
   labs(x='Chromosomes', y='Chromothripsis Frequency')+
@@ -177,5 +182,15 @@ ggplot(df, aes(y=Freq, x=Var1, fill=Race))+
   theme_classic(base_size = 20)+
   theme(axis.text.x = element_text(size = 10))+
   scale_fill_brewer(palette=colorType_Set)
-dev.off()
 
+
+tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Extended_Figure2.tif', height=1800, width=2200)
+grid.arrange(plot_grid(Ext_Fig2A, labels = 'A', label_size = 30),
+             plot_grid(Ext_Fig2B, labels = 'B', label_size = 30),
+             plot_grid(Ext_Fig2C, labels = 'C', label_size = 30),
+          layout_matrix = rbind(c(1, 1, 2),
+                                c(3, 3, 3),
+                                c(3, 3, 3),
+                                c(3, 3, 3))
+)
+dev.off()

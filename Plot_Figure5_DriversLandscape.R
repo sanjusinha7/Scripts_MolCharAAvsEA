@@ -90,12 +90,11 @@ dev.off()
 ##########
 ###Figure 5B:: Showing Exp and CNV Changes
 ##########
-source('../3.Tools/define_Exp_matched_Scale.R')
+source('/Users/sinhas8/Project_Chromotrypsis/3.Tools/define_Exp_matched_Scale.R')
 Exp_matched_scaled=t(Exp_matched_scaled)
 CNV_matched_scaled=t(CNV_matched_scaled)
 Drivers=Freq_lung_wdoutNA[-grep('None',Freq_lung_wdoutNA$Significance),]
 Driver_GeneList=unique(Drivers$GeneName)
-
 Driver_corr=t(sapply(as.character(unlist(Driver_GeneList)), function(x)
   cor.test(unlist(Exp_matched[x,]), unlist(CNV_matched[x,]), method = c('pearson') )[c(3,4)]))
 Driver_corr=Driver_corr[!duplicated(rownames(Driver_corr)),]
@@ -112,9 +111,10 @@ plot_CNV_Exp<-function(GeneName, P_value, Rho, K, legend_position="none"){
     scale_fill_manual(values = c("Dark green", "green", "grey", 'Pink', 'Dark Red'))+
     theme(legend.position = legend_position, axis.title.x=element_blank(),
           axis.text.x=element_blank(),
-          axis.ticks.x=element_blank())+
+          axis.ticks.x=element_blank(),
+          plot.title = element_text(size = 15))+
     coord_cartesian(ylim = c(ylim1[1]*1.05, ylim1[2]*K))+
-    ggtitle(paste(GeneName, ifelse(P_value<0.05, '*', ''), sep='') )
+    ggtitle(paste(GeneName, ';', paste0('P=', P_value, ';', 'Rho=', Rho, sep=''), sep='') )
   Figure5
 }
 ##########
@@ -123,7 +123,8 @@ plot_CNV_Exp<-function(GeneName, P_value, Rho, K, legend_position="none"){
 GeneName='CDKN2A'
 legend_position="top"; K=2; P_value=0.1
 df1=data.frame(Expression=unlist(Exp_matched_scaled[GeneName,]), 
-               CNV=factor(xtile(unlist(CNV_matched[GeneName,]), cutpoints = c(-0.5, -0.1, 0.1, 0.5))) )
+               CNV=factor(xtile(unlist(CNV_matched[GeneName,]), 
+                                cutpoints = c(-0.5, -0.1, 0.1, 0.5))) )
 ylim1 = boxplot.stats(df1$Expression)$stats[c(1, 5)]
 xlim1 = boxplot.stats(as.numeric(df1$CNV))$stats[c(1, 5)]
 legend=get_legend(
@@ -149,15 +150,19 @@ legend=get_legend(
 ###############
 ##Putting them together:: Supp Figure of Expression
 ###############
-Supp_Figure5B_plist=c(lapply(rownames(Driver_corr)[c(2, 4, 5, 7, 13)], function(x) plot_CNV_Exp(GeneName=x,
-                                                                                           P_value=Driver_corr[x,1],
-                                                                                           Rho=Driver_corr[x,2],
-                                                                                           K=4.5)),
-                 lapply(rownames(Driver_corr)[-c(2, 4, 5, 7, 13)], function(x) plot_CNV_Exp(GeneName=x,
-                                                                                            P_value=Driver_corr[x,1],
-                                                                                            Rho=Driver_corr[x,2],
-                                                                                            K=1.5)))
-tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Supp_Figure_Expressioncorr_Sep1.tif', 
+Supp_Figure5B_plist=c(lapply(rownames(Driver_corr)[c(2, 4, 5, 7, 13)],
+                             function(x) plot_CNV_Exp(GeneName=x,
+                                                      P_value=round(as.numeric(as.character(Driver_corr[x,1])),
+                                                                    2),
+                                                      Rho=round(as.numeric(Driver_corr[x,2][[1]]), 2),
+                                                      K=4.5)),
+                      lapply(rownames(Driver_corr)[-c(2, 4, 5, 7, 13)], 
+                             function(x) plot_CNV_Exp(GeneName=x,
+                                                      P_value=round(as.numeric(as.character(Driver_corr[x,1])),
+                                                                    2),
+                                                      Rho=round(as.numeric(Driver_corr[x,2][[1]]), 2),
+                                                      K=1.5)))
+tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Supp_Figure_Expressioncorr_Nov4.tif', 
      width=1500, height=1200)
 plot_grid(legend,
           do.call("grid.arrange", c(Supp_Figure5B_plist, ncol=6, nrow=3)),
@@ -166,19 +171,24 @@ dev.off()
 ###############
 ##Putting them together:: Figure 5B with Legend
 ###############
-Exp_matched_scaled['CDKN1A',]
-Figure5B_plist=c(lapply(rownames(Driver_corr)[c(4)], function(x) plot_CNV_Exp(GeneName=x,
-                                                                              P_value=Driver_corr[x,1],
-                                                                              Rho=Driver_corr[x,2],
-                                                                              K=4.5)),
-                 lapply(rownames(Driver_corr)[c(7)], function(x) plot_CNV_Exp(GeneName=x,
-                                                                              P_value=Driver_corr[x,1],
-                                                                              Rho=Driver_corr[x,2],
-                                                                              K=4.5)),
-                 lapply(rownames(Driver_corr)[c(18)], function(x) plot_CNV_Exp(GeneName=x,
-                                                                              P_value=Driver_corr[x,1],
-                                                                              Rho=Driver_corr[x,2],
-                                                                              K=1)))
+Figure5B_plist=c(lapply(rownames(Driver_corr)[c(4)],
+                        function(x) plot_CNV_Exp(GeneName=x,
+                                                 P_value=round(as.numeric(as.character(Driver_corr[x,1])),
+                                                               2),
+                                                 Rho=round(as.numeric(Driver_corr[x,2][[1]]), 2),
+                                                 K=4.5)),
+                 lapply(rownames(Driver_corr)[c(7)],
+                        function(x) plot_CNV_Exp(GeneName=x,
+                                                 P_value=round(as.numeric(as.character(Driver_corr[x,1])),
+                                                               2),
+                                                 Rho=round(as.numeric(Driver_corr[x,2][[1]]), 2),
+                                                 K=4.5)),
+                 lapply(rownames(Driver_corr)[c(18)],
+                        function(x) plot_CNV_Exp(GeneName=x,
+                                                 P_value=round(as.numeric(as.character(Driver_corr[x,1])),
+                                                               2),
+                                                 Rho=round(as.numeric(Driver_corr[x,2][[1]]), 2),
+                                                 K=1)))
 
 # tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Figure5B.tif', 
 #        width=1200, height=1200)
@@ -192,18 +202,19 @@ maxwidth <- do.call(grid::unit.pmax, widths)
 for (i in 1:length(grobs)){
   grobs[[i]]$widths[2:5] <- as.list(maxwidth)
 }
+
 Comp_Figure_5B=plot_grid(legend,
           grid.arrange(grobs=grobs, ncol=1, nrow=3, 
                        bottom=textGrob("CNV", gp=gpar(fontsize=25)),
-                       left=textGrob("Expression", gp=gpar(fontsize=25), rot = 90, vjust = 1)),
+                       left=textGrob("Expression",
+                                     gp=gpar(fontsize=25), rot = 90, vjust = 1)),
           nrow=2,
           rel_heights = c(2/10,8/10)
 )
-# dev.off()
 ###############
 ##Putting them together:: Complete FIgure 5
 ###############
-tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Comp_Figure5_Sep1.tif', 
+tiff('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Comp_Figure5_Nov3.tif', 
      width=1800, height=1200)
 plot_grid(Figure5A, 
           plot_grid(NULL, Comp_Figure_5B, NULL, rel_heights = c(1/10, 3/5, 1/10), nrow=3), 
@@ -215,18 +226,16 @@ plot_grid(Figure5A,
 dev.off()
 
 ###############
-##Adding Survival
+##Vetor Form
 ###############
-require(survival)
-Driver_OI=names(which(unlist(Driver_corr[,1])<0.1))
-CNV_FORSurvival=CNV[,na.omit(match(mat$acc[mat$hist=='LUSC'], colnames(CNV)))]
-mat_FORSurvival=mat[!is.na(match(mat$acc, colnames(CNV_FORSurvival))),]
-temp=apply(CNV_FORSurvival[Driver_OI,], 1, function(x) 
-  summary(coxph(Surv(mat_FORSurvival$survival, mat_FORSurvival$lungcancer_death_5_years)~ x))$coefficients[c(1,5)])
-temp
-CNV_FORSurvival=CNV[,na.omit(match(mat$acc[mat$hist=='LUAD'], colnames(CNV)))]
-mat_FORSurvival=mat[!is.na(match(mat$acc, colnames(CNV_FORSurvival))),]
-temp=apply(CNV_FORSurvival[Driver_OI,], 1, function(x) 
-  summary(coxph(Surv(mat_FORSurvival$survival, mat_FORSurvival$lungcancer_death_5_years)~ x))$coefficients[c(1,5)])
-temp
-
+setEPS()
+postscript('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Figure4_vecForm.eps', 
+     width=24, height=16)
+plot_grid(Figure5A, 
+          plot_grid(NULL, Comp_Figure_5B, NULL, rel_heights = c(1/10, 3/5, 1/10), nrow=3), 
+          ncol=2,
+          labels='AUTO',  label_size = 35,
+          #layout_matrix = lay, 
+          rel_widths = c(4/5, 1/5)
+)
+dev.off()
