@@ -14,7 +14,8 @@ scaling_cancerType<-function(quan1=gi, quan2=hist){
 setwd('/users/sinhas8/Project_Chromotrypsis/')
 mat=read.csv('2.Data/Corrected_NCIMD_HRD_by_LOH_and_GI.csv')
 age_sex=read.csv('2.Data/age_gender_info.csv')
-ncimd=cbind(ncimd, age_sex[match(ncimd$acc,age_sex$accession),])
+ncimd=cbind(mat, age_sex[match(mat$acc,age_sex$accession),])
+
 ##################
 ###Process files
 ##################

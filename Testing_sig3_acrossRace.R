@@ -25,9 +25,11 @@ Diff_across_race<-function(cancer_type=levels(TCGAsig$Project_Name)[43],
 
 TCGA_projects=levels(TCGAsig$Project_Name)[grep('TCGA',levels(TCGAsig$Project_Name))]
 
-TCGA_Signature3_cancerTYpe=data.frame(TCGA_projects, P=sapply(1:73, function(x)
+TCGA_Signature13_cancerTYpe=data.frame(TCGA_projects, P=sapply(1:73, function(x)
   err_handle(Diff_across_race(cancer_type=levels(TCGAsig$Project_Name)[x],
-                              Sig_Num=3, pancan=FALSE)))[grep('TCGA',levels(TCGAsig$Project_Name))])
+                              Sig_Num=13, pancan=FALSE)))[grep('TCGA',
+                                                              levels(TCGAsig$Project_Name))])
+write.csv(TCGA_Signature12_cancerTYpe, '/Users/sinhas8/TCGA_Signature12_cancerTYpe.csv')
 
 TCGA_Signature3_cancerTYpe=na.omit(TCGA_Signature3_cancerTYpe)
 sum(TCGA_Signature3_cancerTYpe$P<0.5)/nrow(TCGA_Signature3_cancerTYpe)
@@ -40,8 +42,6 @@ Pancan_Sigdf=Pancan_Sigdf[order(Pancan_Sigdf$SigFor_HRD),]
 Pancan_Sigdf$FDR_SigFor_HRD=p.adjust(Pancan_Sigdf$SigFor_HRD, method='fdr')
 
 table(TCGAsig$race[TCGAsig$Project_Name==levels(TCGAsig$Project_Name)[43]])/30
-
-
 ################
 ##Signature 3
 ################

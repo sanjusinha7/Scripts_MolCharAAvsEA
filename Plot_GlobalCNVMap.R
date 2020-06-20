@@ -97,7 +97,7 @@ Global_CNV_plot<-function(both_FF.res, multiseg, race, cancer_type){
   # tiff(paste('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Flat_test1_',race,'_',cancer_type,'.tif', sep=''))
   # p2=plotFreq(segments=both_FF.res,thres.gain=0.2,thres.loss=-0.2)
   # dev.off()
-}
+  }
 tiff(paste('/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/Circ_test1v2.tif'),
      height = 1200, width=1200)
 par(mfrow=c(2,2))

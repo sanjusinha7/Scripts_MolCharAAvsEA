@@ -4,6 +4,7 @@
 DDR=read.csv('/Users/sinhas8/Downloads/DDR_Genes.csv')
 colnames(DDR$Gene.Symbol); colnames(DDR)
 DDR_Geneset_List=apply(DDR[,c(11:29)], 2, function(x) unlist(x[x!='']) )
+DDR_Geneset_List$Homologous.Recomination..HR.
 HR_Genes=unlist(DDR[,15][DDR[,15]!=''])
 core_HRGenes=unlist(DDR[,25][DDR[,25]!=''])
 gtex=read.csv('/Users/sinhas8/Downloads/Gtex_Mutation.csv')

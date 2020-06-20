@@ -1,7 +1,7 @@
 ##libraries
 require(data.table)
 require(statar)
-
+source('/Users/sinhas8/myCustom_functions.R')
 #########################
 ##Step 0: Pre-Processing
 #########################
@@ -14,6 +14,7 @@ Exp=cbind(read.csv('2.Data/Exp_AA_AD.csv'),
              read.csv('2.Data/Exp_EA_AD.csv'),
              read.csv('2.Data/Exp_AA_SC.csv'),
              read.csv('2.Data/Exp_EA_SC.csv'))
+
 rownames(Exp)=make.names(Exp[,1], unique = T)
 Exp=Exp[,-1]
 Exp=Exp[,-grep('X',colnames(Exp))]
@@ -55,7 +56,6 @@ CNV_matched_scaled=apply(CNV_matched, 1, scale)
 #########################
 ##Step 2: Matched Matrix
 #########################
-dim(CNV_matched)
 corr_CNV=sapply(seq(nrow(CNV_matched)), function(x) 
   unlist(cor.test(unlist(CNV_matched[x,]), unlist(Exp_matched[x,]))[c(3, 4)]))
 corr_CNV[1:2, 1:10]
