@@ -12,10 +12,12 @@ colnames(DDR$Gene.Symbol); colnames(DDR)
 DDR_Geneset_List=apply(DDR[,c(11:29)], 2, function(x) unlist(x[x!='']) )
 HR_Genes=unlist(DDR[,15][DDR[,15]!=''])
 core_HRGenes=unlist(DDR[,25][DDR[,25]!=''])
+demo$race=factor(demo$race)
 levels(demo[,c('race')])[c(6,8)]=c('AA','EA')
 demo=demo[demo[,c('race')]=='AA' | demo[,c('race')]=='EA',]
 df=df[!is.na(match(df$bcr_patient_barcode, demo$bcr_patient_barcode)),]
-levels(df$race)[c(7, 9)]=c('AA', 'EA')
+df$race=factor(df$race)
+levels(df$race)[c(2, 3)]=c('AA', 'EA')
 dim(df); dim(demo)
 demo[1:5, 1:5]
 ####################################################################
@@ -72,7 +74,7 @@ RaceCount_across_canType=aggregate(demo$race~ demo$acronym,
                                                  sum(x=='EA')) )
 sum(RaceCount_across_canType[,2][,2])
 CanSpec_df2write=lapply(DDR_Geneset_List, 
-                        function(x) sapply(levels(demo$acronym), function(y) 
+                        function(x) sapply(levels(factor(demo$acronym)), function(y) 
                           Enrichmentof_Germline_Deficiency_byRace(Geneset_OI = x,
                                                                   cancer_type = y)))
 
@@ -89,6 +91,7 @@ annotation=data.frame(pvalues=CompHRD_pvalues[colnames(HRD)],
                 ystar=0.20,
                 cancer_type=levels(df_HRD$cancer_type),
                 Race='AA')
+
 ####################################################################
 # Extended Figure 10
 ####################################################################

@@ -1,0 +1,46 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+install.packages("naniar")
+require(naniar)
+source('/Users/sinhas8/Project_Chromotrypsis/3.Tools/germline_HRD.R')
+OR_LUSC_germline_differences=data.frame(t(sapply(CanSpec_df2write, function(x)
+  c(p_value= -log10(as.numeric(x[,'LUSC'][1])),
+    OR=as.numeric(x[,'LUSC'][2])/as.numeric(x[,'LUSC'][3]) ) )))
+OR_LUSC_germline_differences$pathway_names=c(gsub('\\.',' ',strsplit_customv0(rownames(OR_LUSC_germline_differences),'\\.\\.', 1))[1:10],
+paste(gsub('\\.',' ',strsplit_customv0(rownames(OR_LUSC_germline_differences),'\\.\\.', 1))[11:19], 'Core'))
+OR_LUSC_germline_differences$whether_Core=
+  grepl( 'Core',OR_LUSC_germline_differences$pathway_names) 
+
+require(ggplot2)
+require(ggrepel)
+# OR_LUSC_germline_differences$p_value[is.na(OR_LUSC_germline_differences$p_value)]=1
+P1 <- ggplot(OR_LUSC_germline_differences,
+       aes(y=p_value, x=OR, label=pathway_names))+
+  geom_miss_point()+
+  geom_label_repel(min.segment.length = 0, nudge_y = 0.5)+
+  theme_bw(base_size = 20)+
+  lims(x=c(0,12), y=c(0,4))+
+  labs(x='Odds Ratio of\n Germline Deficiency\nin AA vs AA',y='-log10(P)')
+  
+ggsave(P1,
+       filename = '/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/GermLine_difference_panel.tiff')
+ggsave(P1,
+       filename = '/Users/sinhas8/Project_Chromotrypsis/prep_final_figures/GermLine_difference_panel.pdf')
+
+cat(OR_LUSC_germline_differences$pathway_names[is.na(OR_LUSC_germline_differences$OR)], sep = '\n')
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+

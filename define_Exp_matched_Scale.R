@@ -18,6 +18,7 @@ rownames(Exp)=make.names(Exp[,1], unique = T)
 Exp=Exp[,-1]
 Exp=Exp[,-grep('X',colnames(Exp))]
 colnames(Exp)=sapply(colnames(Exp), function(x) gsub("[^0-9]", "", x))
+
 ##CNV dataset for gene 
 setwd('/Users/sinhas8/Project_Chromotrypsis/')
 Cancer_Type='LUSC'
